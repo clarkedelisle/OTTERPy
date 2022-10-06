@@ -1,7 +1,7 @@
 # OTTERPy
 This is the repository for model code, sample data, and plotting scripts for the OTTER model for Python. 
 
-    """ 
+ 
     otterpystochastic is the main conrolling function that defines and runs 
     the OtterPy Model. The only things not contained in this function are 
     the global variables which are given to the model via the command line.
@@ -77,4 +77,3 @@ This is the repository for model code, sample data, and plotting scripts for the
     yr2sec:           number of seconds in a year
     z:                bedrock channel elevation
     ZStore:           storing snapshots of bedrock elevation through time
-    """
