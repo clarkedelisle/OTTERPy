@@ -1,12 +1,5 @@
 # OTTERPy
 This is the repository for model code, sample data, and plotting scripts for the OTTER model for Python. 
-
- 
-    otterpystochastic is the main conrolling function that defines and runs 
-    the OtterPy Model. The only things not contained in this function are 
-    the global variables which are given to the model via the command line.
-    
-    There is an example of running this model at the end of this code. 
     
     Glossary of variables - this is pretty close to exhaustive, there are a
     probably a couple of throwaway variables not listed here.
