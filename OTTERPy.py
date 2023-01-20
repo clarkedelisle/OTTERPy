@@ -1,5 +1,14 @@
+"""
+    This code support the manuscript titled 'Rethinking variability in bedrock rivers:
+    variability of hillslope sediment supply modulates bedrock incision during floods'
+    by Clarke Delisle and Brian J. Yanites. 
+"""
+
 import sys
-import os
+import numpy as np
+import scipy.special as sc
+from scipy.optimize import fsolve
+import pandas as pd
 
 kv = float(sys.argv[1])
 eta_sedvar = float(sys.argv[2])
@@ -11,12 +20,7 @@ dt = 1/float(sys.argv[7])
 dx = float(sys.argv[8])
     
 def otterpystochastic(kv,eta_sedvar,uprate,beta,onoffsedvar,time,dt,dx):
-    
-    import numpy as np
-    import scipy.special as sc
-    from scipy.optimize import fsolve
-    import pandas as pd
-    
+        
     def DomainStart(dx, time, dt):
         
         """Initialize space and time domains"""
@@ -159,10 +163,8 @@ def otterpystochastic(kv,eta_sedvar,uprate,beta,onoffsedvar,time,dt,dx):
     Qtf3 = np.zeros((3,int(len(x))))
     tau3 = np.zeros((3,int(len(x))))
     taubQSQT3 = np.zeros((3,int(len(x))))  
-    Hiatus20 = np.zeros((1,2))
     dz_b_store = dz_b
     dz_s_store = dz_s
-    HiatusCounter = 0
     
     nsaves = 1000
     savecounter = 0
@@ -384,7 +386,7 @@ def otterpystochastic(kv,eta_sedvar,uprate,beta,onoffsedvar,time,dt,dx):
             Qs_n = (rho_s * beta * dA * eroded_sedsup * dt) + Qs_down
         else:
            # Qs_n = (rho_s * beta * dA * eroded_sedsup * dt * QsScale[t]) + Qs_down
-           Qs_n = (rho_s * beta * dA * eroded_sedsup * dt * QsScale[t] * 0) + Qs_down * 0
+           Qs_n = (rho_s * beta * dA * eroded_sedsup * dt * QsScale[t]) + Qs_down
             
         EE = (dz_s_store / dt)
         QSS = (dz_b_store / dt)
@@ -445,6 +447,8 @@ def otterpystochastic(kv,eta_sedvar,uprate,beta,onoffsedvar,time,dt,dx):
             EStore[:, saveindex] = dz_b
             TauStore[:,saveindex] = tau_b
             QwStore[:,saveindex] = Qw
+            # I usually leave this in just if I'm testing model parameters, it will print these variables
+            # for one node (here I use node 40) through time in the terminal
             print('t = ' + str(t*dt) + ', Qw = ' + str(Qw[40]) + ', H = ' + str(H[40])+ ', Z = ' + str(z[40]) + ', Sed = ' + str(sed_depth[40]))
             FStore[:,saveindex] = F0
         elif t == (len(tarray)) - 2:
@@ -457,7 +461,7 @@ def otterpystochastic(kv,eta_sedvar,uprate,beta,onoffsedvar,time,dt,dx):
             QwStore[:,-2] = Qw
             FStore[:,-2] = F0
             
-        # Saving variables at high - resolution for last 5k years
+        # Saving variables at high - resolution for last 2k years
         if t > (time/dt-12000):
             WidthStoreEq[:, savecounter] = W
             SlopeStoreEq[:, savecounter] = slope * -1
@@ -468,19 +472,7 @@ def otterpystochastic(kv,eta_sedvar,uprate,beta,onoffsedvar,time,dt,dx):
             QwStoreEq[:,savecounter] = Qw
             FStoreEq[:,savecounter] = F0
             savecounter = savecounter + 1
-            
-        # Keeping track of incision hiatuses
-        if  dz_b[20] == 0:
-            HiatusCounter = HiatusCounter + 1
-        elif 1*dz_b[20] < 0:
-            if HiatusCounter == 0:
-                continue
-            else:
-                Hiatus20 = np.append(Hiatus20, [[HiatusCounter,t]],axis=0)
-                HiatusCounter = 0
-        elif t == (len(tarray) - 1):
-            Hiatus20 = np.append(Hiatus20, [[HiatusCounter,t]],axis=0)
-            
+                        
         # reset some variables to zero before the loop repeats    
         eroded_sedsup = initial_sedsup
         Qs_down = 0
@@ -501,10 +493,9 @@ def otterpystochastic(kv,eta_sedvar,uprate,beta,onoffsedvar,time,dt,dx):
                         "Sed_Depth":SedStoreEq,"E":EStoreEq,"Tau":TauStoreEq,"Qw":QwStoreEq,\
                             "F":FStoreEq},ignore_index = True)
     
-    # save array of incision hiatuses
+    # save data to a .pkl file
     df.to_pickle(ModelName + ".pkl") 
     df_Eq.to_pickle(ModelName + "Eq.pkl")
-    np.save(ModelName + "Hiatus", Hiatus20)
     
     return
   
@@ -518,7 +509,7 @@ otterpystochastic(kv,eta_sedvar,uprate,beta,onoffsedvar,time,dt,dx)
 # sure that this file is in a directory that you are okay saving new files to, 
 # open a terminal window on your Mac and enter
 #
-#     python OTTERPy.py 0.3 0.5 0.0001 0.3 1 1000 12 2000
+#     python OTTERPy.py 0.3 0.5 0.0001 0.3 1 1000 24 2000
 #
 # this will initiate a model where 
 # k = 0.3 (this controls water discharge variability)
@@ -527,5 +518,5 @@ otterpystochastic(kv,eta_sedvar,uprate,beta,onoffsedvar,time,dt,dx)
 # beta = 0.3 (30% of sediment is bedload, the rest suspended)
 # onoffsedvar = 1 (this turns on dynamic sediment supply, 0 would turn it off)
 # time = 1000 years
-# dt = 1/12 years
+# dt = 1/24 years
 # dx = 2000m
