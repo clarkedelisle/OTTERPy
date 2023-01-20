@@ -4,6 +4,11 @@ This is the repository for model code, sample data, and plotting scripts for the
 The file OTTERPy.py contains the actual model code
 
 The file OTTERPlottingFuncs.py contains a few scripts for plotting model results.
+
+The four sample data files in the repository are results from two long (1.5million model year) runs at different
+rock uplift rates which took several days to run on the IU Bloomington Quartz supercomputing cluster. 
+This data should be viewed and plotted using the OTTERPlottingFuncs.py script. See that code for information on 
+how to select which model to plot.
     
     Glossary of variables - this is pretty close to exhaustive, there are a
     probably a couple of throwaway variables not listed here.
