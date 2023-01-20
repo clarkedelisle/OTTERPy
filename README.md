@@ -1,5 +1,9 @@
 # OTTERPy
 This is the repository for model code, sample data, and plotting scripts for the OTTER model for Python. 
+
+The file OTTERPy.py contains the actual model code
+
+The file OTTERPlottingFuncs.py contains a few scripts for plotting model results.
     
     Glossary of variables - this is pretty close to exhaustive, there are a
     probably a couple of throwaway variables not listed here.
